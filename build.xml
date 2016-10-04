@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+    <!ENTITY properties         SYSTEM "properties.xmlf"> 
+]>
+
+<project name="ud_baselib" default="usage">
+<!-- Bring in properties.xml -->
+&properties;
+
+<target name="usage" description="Print usage for key targets">
+<echo>
+Key Targets:
+                all - Build all: copy classes, copy dist config files, generate jar, copy web files to dist's web directory
+	copyClasses - copy class files to dist's build directory
+	copyDistConf-web - copy dist config files to dist's build directory
+	genJar - generate jar by build directory's classes files
+	copy-web - copy all other files to  web directory
+              clean - clean dist directory
+
+              usage - Print this help text...
+</echo>
+</target>
+
+<!-- ================================================ -->
+<!-- Meta targets -->
+<!-- ================================================ -->
+<target name="all" depends="proguard" description="Build all">
+</target>
+
+<target name="clean" description="Clean out build directory">
+    <delete dir="${ud_baselib.dist}"/>
+</target>
+	
+<!-- build standalone oacms_raw.jar, for external consumption -->
+<!-- <target name="genJar" depends="copyClasses"> -->
+<target name="genJar">
+    <mkdir dir="${ud_baselib.dist}"/>
+    <jar destfile="${ud_baselib.dist}/ud-base-1.0_raw.jar">
+        <manifest>
+            <attribute name="Manifest-Version" value="${ud_baselib.version}"/>
+        </manifest>
+        <fileset dir="${bin}">
+            <include name="**/*"/>
+        </fileset>        
+    </jar>
+</target>
+	
+<target name="proguard" depends="genJar">
+	<taskdef resource="proguard/ant/task.properties"
+		         classpath="./proguard/lib/proguard.jar" />
+	<proguard configuration="./proguard/myconfig.pro"/>
+</target>
+
+</project>
